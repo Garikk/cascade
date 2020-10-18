@@ -17,3 +17,4 @@ message(${${projectName}_SRC})
 add_executable(${projectName} ${${projectName}_SRC})
 
 qt5_use_modules(${projectName} Widgets)
+target_link_libraries(${projectName} ftdi1)
