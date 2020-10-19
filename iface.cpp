@@ -45,7 +45,7 @@ IfaceELM::IfaceELM(Cpu *c, UI *ui, const char *tty, int custom_boudrate, int att
 {
   char attpr[7];
   char attp[7];
-  sh = os_serial_open(tty, custom_boudrate);
+  sh = os_serial_open(tty, true, custom_boudrate);
   if (sh < 0) {
     ERROR("failed to open tty %s\n", tty);
     exit(1);

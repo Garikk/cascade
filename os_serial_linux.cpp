@@ -44,8 +44,10 @@ int os_serial_open(const char *tty, bool nonblock, int custom_boudrate)
   struct termios tio;
   tcgetattr(fd, &tio);
   cfmakeraw(&tio);
+
   if (custom_boudrate != -1) {
       cfsetspeed(&tio, custom_boudrate);
+      DEBUG(OS, "Set boudrate is %i\n", custom_boudrate);
   }
   tcsetattr(fd, TCSANOW, &tio);
   DEBUG(OS, "OS serial flush after open\n");

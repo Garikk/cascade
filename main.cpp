@@ -64,7 +64,7 @@ int main(int argc, char **argv)
 
   int iface_type = IFACE_FAKE;
   int set_boudrate = -1;
-  int attp_mode = 0;
+  int attp_mode = -1;
 
   bool expect_echo = false;
   bool ftdi_sampling_enabled = false;
@@ -75,7 +75,7 @@ int main(int argc, char **argv)
 #endif
 #if !defined(DIST_WINDOWS)
   signed char c;
-  while ((c = getopt (argc, argv, "d:t:w:s:m:r:p:i:ex:v:S:b:f")) != -1) {
+  while ((c = getopt (argc, argv, "d:t:w:s:m:r:p:i:ex:v:S:b:f:U")) != -1) {
     switch (c) {
       case 'd':
         {
@@ -178,10 +178,10 @@ int main(int argc, char **argv)
         ftdi_sampling_enabled = true;
         break;
       case 'b':
-        set_boudrate=atoi(optarg);
+        set_boudrate=strtol(optarg, NULL, 0);
         break;
       case 'f':
-        attp_mode=atoi(optarg);
+        attp_mode=strtol(optarg, NULL, 0);
         break;
       default:
         ERROR("bad shit\n");
@@ -214,7 +214,7 @@ int main(int argc, char **argv)
       }
   }
 #endif
-
+   DEBUG(OS, "[OPTS] ELM ATTP is %i, TTY boudrate is %i \n", attp_mode, set_boudrate);
   Interface *iface;
   switch (iface_type) {
     case IFACE_KL:
@@ -238,6 +238,7 @@ int main(int argc, char **argv)
       ERROR("internal error");
       exit(1);
   }
+
   cpu.setSerial(iface, expect_echo);
 
   void *emu = os_create_thread(runEmu, &cpu);
@@ -253,8 +254,5 @@ int main(int argc, char **argv)
   delete iface;
   DEBUG(OS, "iface deleted\n");
 
-#ifdef __MINGW32__
-  fclose(win_stderr);
-#endif
   return ret;
 }
