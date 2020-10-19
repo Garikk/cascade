@@ -30,7 +30,7 @@ class Cpu;
 
 class IfaceELM : public Interface {
 public:
-  IfaceELM(Cpu *p, UI *ui, const char *tty);
+  IfaceELM(Cpu *p, UI *ui, const char *tty, int custom_boudrate, int attp_mode);
   virtual ~IfaceELM();
   
   virtual void setBaudDivisor(int divisor);

@@ -41,9 +41,11 @@ int IfaceELM::msgThreadRunner(void *data)
   return 0;
 }
 
-IfaceELM::IfaceELM(Cpu *c, UI *ui, const char *tty) : Interface(ui)
+IfaceELM::IfaceELM(Cpu *c, UI *ui, const char *tty, int custom_boudrate, int attp_mode) : Interface(ui)
 {
-  sh = os_serial_open(tty);
+  char attpr[7];
+  char attp[7];
+  sh = os_serial_open(tty, custom_boudrate);
   if (sh < 0) {
     ERROR("failed to open tty %s\n", tty);
     exit(1);
@@ -56,8 +58,10 @@ IfaceELM::IfaceELM(Cpu *c, UI *ui, const char *tty) : Interface(ui)
   EXPECT_PROMPT("ATH1")
   os_serial_send(sh, "ATSW00\r"); /* disable wakeup */
   EXPECT_PROMPT("ATSW00")
-  os_serial_send(sh, "ATTP3\r"); /* temp switch to ISO9141-2 */
-  EXPECT_PROMPT("ATTP3")
+  sprintf(attpr, "ATTP%i\r", attp_mode);
+  sprintf(attp, "ATTP%i", attp_mode);
+  os_serial_send(sh, attpr);
+  EXPECT_PROMPT(attp)
   os_serial_send(sh, "ATKW0\r"); /* ignore funky keywords */
   EXPECT_PROMPT("ATKW0")
 

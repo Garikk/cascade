@@ -12,10 +12,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <sys/stat.h>
-#ifndef DIST_WINDOWS
-
 #include <unistd.h>
-#endif //DIST_WINDOWS
 
 #include <string.h>
 #include <assert.h>
@@ -49,9 +46,6 @@ FILE *win_stderr;
 
 int main(int argc, char **argv)
 {
-#ifdef __MINGW32__
-  win_stderr = fopen("stderr.out", "w");
-#endif
 
   UI::initToolkit(argv[0]);
   UI ui;
@@ -67,11 +61,11 @@ int main(int argc, char **argv)
 #define IFACE_FTDI 2
 #define IFACE_FAKE 3
 #define IFACE_KCAN 4
-#if defined(NDEBUG) && (defined(__MINGW32__)|| defined (DIST_WINDOWS))
-  int iface_type = IFACE_KCAN;
-#else
+
   int iface_type = IFACE_FAKE;
-#endif
+  int set_boudrate = -1;
+  int attp_mode = 0;
+
   bool expect_echo = false;
   bool ftdi_sampling_enabled = false;
 
@@ -81,7 +75,7 @@ int main(int argc, char **argv)
 #endif
 #if !defined(DIST_WINDOWS)
   signed char c;
-  while ((c = getopt (argc, argv, "d:t:w:s:m:r:p:i:ex:v:S")) != -1) {
+  while ((c = getopt (argc, argv, "d:t:w:s:m:r:p:i:ex:v:S:b:f")) != -1) {
     switch (c) {
       case 'd':
         {
@@ -183,6 +177,12 @@ int main(int argc, char **argv)
       case 'S':
         ftdi_sampling_enabled = true;
         break;
+      case 'b':
+        set_boudrate=atoi(optarg);
+        break;
+      case 'f':
+        attp_mode=atoi(optarg);
+        break;
       default:
         ERROR("bad shit\n");
         exit(1);
@@ -226,7 +226,7 @@ int main(int argc, char **argv)
       break;
 #endif
     case IFACE_ELM:
-      iface = new IfaceELM(&cpu, &ui, tty);
+      iface = new IfaceELM(&cpu, &ui, tty, set_boudrate, attp_mode);
       break;
     case IFACE_FAKE:
       iface = new IfaceFake(&cpu, &ui);

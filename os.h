@@ -8,7 +8,7 @@
  * License 1.0.  Read the file "LICENSE" for details.
  */
 
-int os_serial_open(const char *tty, bool nonblock = true);
+int os_serial_open(const char *tty, bool nonblock = true, int custom_boudrate = -1);
 int os_serial_close(int handle);
 int os_serial_send(int handle, const char *msg);
 int os_serial_send_buf(int handle, const unsigned char *buf, int len);
