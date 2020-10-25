@@ -25,12 +25,8 @@
 #include "cpu.h"
 #include "eeprom.h"
 #include "iface.h"
-#include "iface_kl_tty.h"
-#ifdef HAVE_FTDI
-#include "iface_kl_ftdi.h"
-#endif
 #include "iface_fake.h"
-#include "iface_kcan.h"
+
 
 uint32_t debug_level;
 uint32_t debug_level_unabridged;
@@ -57,10 +53,7 @@ int main(int argc, char **argv)
   const char *tty = NULL;
   
 #define IFACE_ELM 0
-#define IFACE_KL 1  
-#define IFACE_FTDI 2
 #define IFACE_FAKE 3
-#define IFACE_KCAN 4
 
   int iface_type = IFACE_FAKE;
   int set_boudrate = -1;
@@ -147,14 +140,6 @@ int main(int argc, char **argv)
       case 'i':
         if (!strcmp(optarg, "elm"))
           iface_type = IFACE_ELM;
-        else if (!strcmp(optarg, "kl"))
-          iface_type = IFACE_KL;
-#ifdef HAVE_FTDI
-        else if (!strcmp(optarg, "ftdi"))
-          iface_type = IFACE_FTDI;
-#endif
-        else if (!strcmp(optarg, "kcan"))
-          iface_type = IFACE_KCAN;
         else if (!strcmp(optarg, "fake"))
           iface_type = IFACE_FAKE;
         else {
@@ -217,22 +202,11 @@ int main(int argc, char **argv)
    DEBUG(OS, "[OPTS] ELM ATTP is %i, TTY boudrate is %i \n", attp_mode, set_boudrate);
   Interface *iface;
   switch (iface_type) {
-    case IFACE_KL:
-      iface = new IfaceKLTTY(&cpu, &ui, tty);
-      break;
-#ifdef HAVE_FTDI
-    case IFACE_FTDI:
-      iface = new IfaceKLFTDI(&cpu, &ui, ftdi_sampling_enabled);
-      break;
-#endif
     case IFACE_ELM:
       iface = new IfaceELM(&cpu, &ui, tty, set_boudrate, attp_mode);
       break;
     case IFACE_FAKE:
       iface = new IfaceFake(&cpu, &ui);
-      break;
-    case IFACE_KCAN:
-      iface = new IfaceKCAN(&cpu, &ui, tty);
       break;
     default:
       ERROR("internal error");

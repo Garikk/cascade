@@ -52,6 +52,7 @@ uint8_t Cpu::ioRead8(uint16_t addr)
         case 15:
           REG("AD_COMMAND");
           ret = ad_command;
+          ret = ad_command;
           break;
         default: goto fail;
       };
